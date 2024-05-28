@@ -31,12 +31,12 @@ jobs:
         run: |
           oc login --username=${{ secrets.OPENSHIFT_USERNAME}} --password=${{ secrets.OPENSHIFT_PASSWORD}}  --server=${{ secrets.OPENSHIFT_SERVER }}
 
-      -name: Get Openshift Registry URL
+      - name: Get Openshift Registry URL
         id: get-registry-url
         run: |
-        REGISTRY_URL=$(oc get route default-route -n openshift-image-registry --tempalte='{{ .spec.host }}'
-        echo "registry URL: $REGISTRY_URL"
-        echo "::set-output name=registry_url::$REGISTRY_URL"
+          REGISTRY_URL=$(oc get route default-route -n openshift-image-registry --tempalte='{{ .spec.host }}'
+          echo "registry URL: $REGISTRY_URL"
+          echo "::set-output name=registry_url::$REGISTRY_URL"
 
       - name: Tag Docker image
         run: |
