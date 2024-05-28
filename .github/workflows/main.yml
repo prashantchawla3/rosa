@@ -26,7 +26,7 @@ jobs:
     
       - name: Build Docker image
         run: |
-          docker build -t my-hello-world-app .
+          docker build -t app.py .
 
       - name: Login to OpenShift
         run: |
@@ -41,7 +41,7 @@ jobs:
 
       - name: Tag Docker image
         run: |
-          docker tag my-hello-world-app:latest ${{ secrets.OPENSHIFT_REGISTRY }}/my-project/my-hello-world-app:lates
+          docker tag app.py:latest ${{ secrets.OPENSHIFT_REGISTRY }}/my-project/app.py:lates
 
       - name: log in to OpenShift Registry
         run : |
@@ -49,7 +49,7 @@ jobs:
       
       - name: Push Docker image to OpenShift Registry
         run: |
-          docker push ${{ secrets.get-registry-url.outputs.registry_url }}/my-project/my-hello-world-app:latest
+          docker push ${{ secrets.get-registry-url.outputs.registry_url }}/my-project/app.py:latest
 
       - name: Deploy to OpenShift
         run: |
@@ -58,30 +58,30 @@ jobs:
           apiVersion: apps/v1
           kind: Deployment
           metadata:
-            name: my-hello-world-app
+            name: app.py
           spec:
             replicas: 1
             selector:
               matchLabels:
-                app: my-hello-world-app
+                app: app.py
           template:
             metadata:
               labels:
-                app: my-hello-world-app
+                app: app.py
             spec:
               containers:
-                - name: my-hello-world-app
-                  image: ${{ secrets.get-registry-url.outputs.registry_url }}/my-project/my-hello-world-app:latest
+                - name: app.py
+                  image: ${{ secrets.get-registry-url.outputs.registry_url }}/app.py:latest
                   ports:
                     - containerPort: 5000
           ---
           apiVersion: v1
           kind: Service
           metadata:
-            name: my-hello-world-app
+            name: app.py
           spec:
             selector:
-              app: my-hello-world-app
+              app: app.py
             ports:
               - protocol: TCP
                 port: 80
