@@ -25,7 +25,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t my-hello-world-app 
+          docker build -t my-hello-world-app .
 
       - name: Login to OpenShift
         run: |
