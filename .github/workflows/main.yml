@@ -23,9 +23,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Build and push Docker images
-        uses: docker/build-push-action@v5.3.0
-
+    
       - name: Build Docker image
         run: |
           docker build -t my-hello-world-app .
