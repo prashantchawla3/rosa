@@ -41,7 +41,7 @@ jobs:
 
       - name: Tag Docker image
         run: |
-          docker tag app.py:latest ${{ secrets.OPENSHIFT_REGISTRY }}/my-project/app.py:lates
+          docker tag app.py:latest ${{ secrets.OPENSHIFT_REGISTRY }}/my-project/app.py:latest
 
       - name: log in to OpenShift Registry
         run : |
