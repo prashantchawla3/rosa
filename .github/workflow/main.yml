@@ -1,0 +1,88 @@
+name: Deploy to OpenShift
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build Docker image
+        run: |
+          docker build -t my-hello-world-app 
+
+      - name: Login to OpenShift
+        run: |
+          oc login --username=${{ secrets.OPENSHIFT_USERNAME}} --password=${{ secrets.OPENSHIFT_PASSWORD}}  --server=${{ secrets.OPENSHIFT_SERVER }}
+
+      -name: Get Openshift Registry URL
+        id: get-registry-url
+        run: |
+        REGISTRY_URL=$(oc get route default-route -n openshift-image-registry --tempalte='{{ .spec.host }}'
+        echo "registry URL: $REGISTRY_URL"
+        echo "::set-output name=registry_url::$REGISTRY_URL"
+
+      - name: Tag Docker image
+        run: |
+          docker tag my-hello-world-app:latest ${{ secrets.OPENSHIFT_REGISTRY }}/my-project/my-hello-world-app:lates
+
+      -name:log in to OpenShift Registry
+        run : |
+          docker login -u $(oc whoami) -p$(oc whoami -t) ${{ steps.get-registry-url.output.registry_url }}
+      
+      - name: Push Docker image to OpenShift Registry
+        run: |
+          docker push ${{ secrets.get-registry-url.outputs.registry_url }}/my-project/my-hello-world-app:latest
+
+      - name: Deploy to OpenShift
+        run: |
+          oc project my-project
+          oc apply -f - <<EOF
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: my-hello-world-app
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: my-hello-world-app
+          template:
+            metadata:
+              labels:
+                app: my-hello-world-app
+            spec:
+              containers:
+                - name: my-hello-world-app
+                  image: ${{ secrets.OPENSHIFT_REGISTRY }}/my-project/my-hello-world-app:latest
+                  ports:
+                    - containerPort: 5000
+          ---
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: my-hello-world-app
+          spec:
+            selector:
+              app: my-hello-world-app
+            ports:
+              - protocol: TCP
+                port: 80
+                targetPort: 5000
+          EOF
