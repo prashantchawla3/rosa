@@ -70,7 +70,7 @@ jobs:
             spec:
               containers:
                 - name: my-hello-world-app
-                  image: ${{ secrets.OPENSHIFT_REGISTRY }}/my-project/my-hello-world-app:latest
+                  image: ${{ secrets.get-registry-url.outputs.registry_url }}/my-project/my-hello-world-app:latest
                   ports:
                     - containerPort: 5000
           ---
