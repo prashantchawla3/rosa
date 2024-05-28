@@ -3,11 +3,11 @@ FROM python:3.8-slim
 WORKDIR /app
 
 COPY. /app
-RUN pip install --no-cache-dir -RUN
+RUN pip install --no-cache-dir -r requirements.txt
 requirements.txt
 
-EXPOSE 80
+EXPOSE 8080
 
-ENV NAME world
+ENV NAME World
 
 CMD ["python", "app.py"]
