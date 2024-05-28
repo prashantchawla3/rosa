@@ -42,7 +42,7 @@ jobs:
         run: |
           docker tag my-hello-world-app:latest ${{ secrets.OPENSHIFT_REGISTRY }}/my-project/my-hello-world-app:lates
 
-      -name:log in to OpenShift Registry
+      - name: log in to OpenShift Registry
         run : |
           docker login -u $(oc whoami) -p$(oc whoami -t) ${{ steps.get-registry-url.output.registry_url }}
       
