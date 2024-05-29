@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world
+  namespace: default
+spec:
+  replicas:1
+  selector:
+  matchlabels:
+    app: hello-world
+  template:
+    metadata:
+      labels:
+        app:hello-world
+    spec:
+      containers:
+      - name: hello-world
+        image: ${{ secrets.OPENSHIFT_REGISTRY }}/my-project/app.py:latest
+        ports:
+        - containerPort:5000
+        env:
+        - name: NAME 
+          value: "World"

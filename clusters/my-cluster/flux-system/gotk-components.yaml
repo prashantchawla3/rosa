@@ -1,0 +1,35 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: flux-system
+  namespace: flux-system
+spec:
+  interval:1m0s
+  url: https://github.com/prashantchawla3/rosa.git
+  branch: main
+---
+apiVersion: kustomize.tookit.fluxcd.io/v1bet1
+kind: kustomization
+metadata:
+  name: flux-system
+  namespace: flux-system
+spec:
+  interval:10m0s
+  path: ./cluster/my-cluster/flux-system
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  ---
+  apiVersion: kustomize.toolkit.fluxcd.io/v1beta1
+  kind: Kustomixation
+  metadata:
+    name: hello-world
+    namespace: flux-system
+  spec:
+    interval: 10m0s
+    path: ./clusters/my-cluster/apps/hello-world
+    prune: true
+    sourceRef:
+      kind: GitRepository
+      name: flux-system
